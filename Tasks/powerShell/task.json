@@ -15,14 +15,12 @@
     ],
     "author": "Microsoft Corporation",
     "version": {
-        "Major": 1,
-        "Minor": 2,
-        "Patch": 3
+        "Major": 2,
+        "Minor": 120,
+        "Patch": 0
     },
-    "demands": [
-        "DotNetFramework"
-    ],
-    "minimumAgentVersion": "1.102",
+    "preview": true,
+    "minimumAgentVersion": "2.120.0",
     "groups": [
         {
             "name": "advanced",
@@ -32,76 +30,74 @@
     ],
     "inputs": [
         {
-            "name": "scriptType",
-            "type": "pickList",
-            "label": "Type",
-            "defaultValue": "filePath",
-            "required": true,
-            "helpMarkDown": "Type of the script: File Path or Inline Script",
-            "options": {
-                "inlineScript": "Inline Script",
-                "filePath": "File Path"
-            }
-        },
-        {
-            "name": "scriptName",
-            "type": "filePath",
-            "label": "Script Path",
-            "defaultValue": "",
-            "required": true,
-            "visibleRule": "scriptType = filePath",
-            "helpMarkDown": "Path of the script to execute. Should be fully qualified path or relative to the default working directory."
-        },
-        {
-            "name": "arguments",
-            "type": "string",
-            "label": "Arguments",
-            "defaultValue": "",
-            "required": false,
-            "helpMarkDown": "Arguments passed to the PowerShell script.  Either ordinal parameters or named parameters"
-        },
-        {
-            "name": "workingFolder",
-            "type": "filePath",
-            "label": "Working folder",
-            "defaultValue": "",
-            "required": false,
-            "helpMarkDown": "Current working directory when script is run.  Defaults to the folder where the script is located.",
-            "groupName": "advanced"
-        },
-        {
-            "name": "inlineScript",
+            "name": "script",
             "type": "multiLine",
             "label": "Inline Script",
-            "defaultValue": "# You can write your powershell scripts inline here. \n# You can also pass predefined and custom variables to this scripts using arguments\n\n Write-Host \"Hello World\"",
             "required": true,
-            "helpMarkDown": "",
-            "visibleRule": "scriptType = inlineScript",
+            "defaultValue": "# You can write your powershell scripts inline here. \n# You can also pass predefined and custom variables to this scripts using arguments\n\n Write-Host \"Hello World\"",
             "properties": {
                 "resizable": "true",
                 "rows": "10",
                 "maxLength": "500"
-            }
+            },
+            "helpMarkDown": ""
         },
         {
-            "name": "failOnStandardError",
+            "name": "errorActionPreference",
+            "type": "pickList",
+            "label": "ErrorActionPreference",
+            "required": false,
+            "defaultValue": "stop",
+            "options": {
+                "stop": "Stop",
+                "continueOnError": "ContinueOnError",
+                "silentlyContinue": "SilentlyContinue"
+            },
+            "helpMarkDown": ""
+        },
+        {
+            "name": "failOnStderr",
             "type": "boolean",
             "label": "Fail on Standard Error",
-            "defaultValue": "true",
             "required": false,
-            "helpMarkDown": "If this is true, this task will fail if any errors are written to the error pipeline, or if any data is written to the Standard Error stream. Otherwise the task will rely solely on $LASTEXITCODE and the exit code to determine failure.",
-            "groupName": "advanced"
+            "defaultValue": "false",
+            "helpMarkDown": "If this is true, this task will fail if any errors are written to the error pipeline, or if any data is written to the Standard Error stream. Otherwise the task will rely on $LASTEXITCODE and the exit code to determine failure."
+        },
+        {
+            "name": "ignoreExitCode",
+            "type": "boolean",
+            "label": "Ignore Exit Code",
+            "required": false,
+            "defaultValue": "false",
+            "helpMarkDown": ""
+        },
+        {
+            "name": "ignoreLASTEXITCODE",
+            "type": "boolean",
+            "label": "Ignore $LASTEXITCODE",
+            "required": false,
+            "defaultValue": "false",
+            "helpMarkDown": ""
+        },
+        {
+            "name": "workingDirectory",
+            "type": "filePath",
+            "label": "Working Directory",
+            "required": false,
+            "defaultValue": "",
+            "helpMarkDown": "Working directory where the script is run."
         }
     ],
     "instanceNameFormat": "PowerShell Script",
     "execution": {
-        "PowerShellExe": {
-            "target": "$(scriptName)",
-            "argumentFormat": "$(arguments)",
-            "workingDirectory": "$(workingFolder)",
-            "inlineScript": "$(inlineScript)",
-            "scriptType": "$(scriptType)",
-            "failOnStandardError": "$(failOnStandardError)"
+        "Script": {
+            "target": "powershell",
+            "script": "$(script)",
+            "errorActionPreference": "$(errorActionPreference)",
+            "failOnStderr": "$(failOnStderr)",
+            "ignoreExitCode": "$(ignoreExitCode)",
+            "ignoreLASTEXITCODE": "$(ignoreLASTEXITCODE)",
+            "workingDirectory": "$(workingDirectory)"
         }
     }
 }
